@@ -4,7 +4,8 @@
 //
 //  Created by Волошин Александр on 23.01.2025.
 //
-struct AlertModel{
+
+struct AlertModel {
     var title: String
     var message: String
     var buttonText:String
