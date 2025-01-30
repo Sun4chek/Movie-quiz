@@ -12,7 +12,8 @@ final class MovieQuizViewController: UIViewController {
     private var alertPresenter = AlertPresenter()
     private var currentQuestionIndex = 0
     private var correctAnswers = 0
-
+    private var statisticService = StatisticService()
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         imageView.layer.cornerRadius = 20
@@ -73,9 +74,15 @@ final class MovieQuizViewController: UIViewController {
     
     private func showNextQuestionOrResults() {
         if currentQuestionIndex == questionsAmount - 1 {
-            let text = correctAnswers == questionsAmount ?
-            "Поздравляем, вы ответили на 10 из 10!" :
-            "Вы ответили на \(correctAnswers) из 10, попробуйте ещё раз!"
+            
+            statisticService.store(correct: correctAnswers, total: 10)
+            
+            
+            
+            let text = "Ваш результат \(correctAnswers)/10 \n количество сыгранных квизов:\(statisticService.gamesCount) \n Рекорд: \(statisticService.bestGame.correct)/\(statisticService.bestGame.total) (\(statisticService.bestGame.date))\n\(String(format: "%.2f", statisticService.totalAccuracy))%"
+            
+            
+            
             let alertModel = AlertModel(title: "Этот раунд окончен!",
                                         message: text,
                                         buttonText: "Сыграть ещё раз") { [weak self] in
@@ -85,7 +92,7 @@ final class MovieQuizViewController: UIViewController {
                     self.imageView.layer.borderColor = UIColor.clear.cgColor
                     questionFactory?.requestNextQuestion()
             }
-            alertPresenter.showAlert(model: alertModel) // 3
+            alertPresenter.showAlert(model: alertModel)
         } else {
             self.imageView.layer.borderColor = UIColor.clear.cgColor
             currentQuestionIndex += 1
