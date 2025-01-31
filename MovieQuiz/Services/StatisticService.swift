@@ -55,13 +55,12 @@ final class StatisticService:StatisticServiceProtocol {
     
     func store(correct count: Int, total amount: Int) {
         gamesCount += 1
-        print(count)
-        print(amount)
+        
         
         let currentCorrect = storage.integer(forKey: Keys.correct.rawValue)
         let currentTotal = storage.integer(forKey: Keys.total.rawValue)
         
-        print(currentTotal)
+        
         storage.set(currentCorrect + count, forKey: Keys.correct.rawValue)
         storage.set(currentTotal + amount, forKey: Keys.total.rawValue)
         
