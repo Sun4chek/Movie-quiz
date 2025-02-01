@@ -13,7 +13,7 @@ final class MovieQuizViewController: UIViewController {
     private var alertPresenter = AlertPresenter()
     private var currentQuestionIndex = 0
     private var correctAnswers = 0
-    private var statisticService = StatisticService()
+    private var statisticService : StatisticServiceProtocol?
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -23,7 +23,8 @@ final class MovieQuizViewController: UIViewController {
         self.questionFactory = questionFactory
         self.alertPresenter.setDelegateView(self)
         questionFactory.requestNextQuestion()
-        
+        let statisticService = StatisticService()
+        self.statisticService = statisticService
     }
     
     @IBAction private func yesButtonClicked(_ sender: UIButton) {
@@ -77,14 +78,14 @@ final class MovieQuizViewController: UIViewController {
     
     private func showNextQuestionOrResults() {
         if currentQuestionIndex == questionsAmount - 1 {
+            statisticService?.store(correct: correctAnswers, total: 10)
             
-            statisticService.store(correct: correctAnswers, total: 10)
             let dateFormatter = DateFormatter()
             dateFormatter.dateFormat = "dd.MM.yyyy HH:mm"
-            let formattedDate = dateFormatter.string(from: statisticService.bestGame.date)
+            let formattedDate = dateFormatter.string(from: (statisticService?.bestGame.date)!)
             
             
-            let text = "Ваш результат \(correctAnswers)/10 \n количество сыгранных квизов:\(statisticService.gamesCount) \n Рекорд: \(statisticService.bestGame.correct)/\(statisticService.bestGame.total) (\(formattedDate))\n\(String(format: "%.2f", statisticService.totalAccuracy))%"
+            let text = "Ваш результат \(correctAnswers)/10 \n количество сыгранных квизов:\(statisticService!.gamesCount) \n Рекорд: \(statisticService!.bestGame.correct)/\(statisticService!.bestGame.total) (\(formattedDate))\n\(String(format: "%.2f", statisticService!.totalAccuracy))%"
             
             
             
