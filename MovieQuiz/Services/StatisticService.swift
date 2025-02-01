@@ -43,33 +43,41 @@ final class StatisticService:StatisticServiceProtocol {
         }
     }
     var totalAccuracy: Double {
-        let correctAnswer = storage.integer(forKey: Keys.correct.rawValue)
-        let totalQuestion = storage.integer(forKey: Keys.total.rawValue)
         if gamesCount > 0 {
-            let procent = (Double(correctAnswer) / (Double(totalQuestion))) * 100
+            let procent = (Double(correct) / (Double(total))) * 100
             return procent
         } else {
             return 0
         }
     }
     
+    var total : Int {
+        get {
+            storage.integer(forKey: Keys.total.rawValue)
+        }
+        set {
+            storage.set(newValue, forKey: Keys.total.rawValue)
+        }
+    }
+    
+    var correct : Int {
+        get {
+            storage.integer(forKey: Keys.correct.rawValue)
+        }
+        set {
+            storage.set(newValue, forKey: Keys.correct.rawValue)
+        }
+    }
+    
     func store(correct count: Int, total amount: Int) {
         gamesCount += 1
-        
-        
-        let currentCorrect = storage.integer(forKey: Keys.correct.rawValue)
-        let currentTotal = storage.integer(forKey: Keys.total.rawValue)
-        
-        
-        storage.set(currentCorrect + count, forKey: Keys.correct.rawValue)
-        storage.set(currentTotal + amount, forKey: Keys.total.rawValue)
+        correct += count
+        total += amount
         
         
         let newGameResult = GameResult(correct: count, total: amount, date: Date())
         if newGameResult.isBetterThan(bestGame){
-            storage.set(count, forKey: Keys.correctBestGame.rawValue)
-            storage.set(amount, forKey: Keys.totalBestGame.rawValue)
-            storage.set(Date(), forKey: Keys.dateBestGame.rawValue)
+            bestGame = newGameResult
         }
     }
     

@@ -23,6 +23,7 @@ final class MovieQuizViewController: UIViewController {
         self.questionFactory = questionFactory
         self.alertPresenter.setDelegateView(self)
         questionFactory.requestNextQuestion()
+        
     }
     
     @IBAction private func yesButtonClicked(_ sender: UIButton) {
@@ -68,7 +69,8 @@ final class MovieQuizViewController: UIViewController {
         } else {
             imageView.layer.borderColor = UIColor.ypRed.cgColor
         }
-        DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
+        DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {[weak self] in
+            guard let self else { return }
             self.showNextQuestionOrResults()
         }
     }
@@ -97,7 +99,7 @@ final class MovieQuizViewController: UIViewController {
             }
             alertPresenter.showAlert(model: alertModel)
         } else {
-            self.imageView.layer.borderColor = UIColor.clear.cgColor
+            imageView.layer.borderColor = UIColor.clear.cgColor
             currentQuestionIndex += 1
             self.questionFactory?.requestNextQuestion()
         }
