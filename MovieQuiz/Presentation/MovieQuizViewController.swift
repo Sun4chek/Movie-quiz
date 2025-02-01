@@ -13,7 +13,8 @@ final class MovieQuizViewController: UIViewController {
     private var alertPresenter = AlertPresenter()
     private var currentQuestionIndex = 0
     private var correctAnswers = 0
-    private var statisticService = StatisticService()
+    private var statisticService: StatisticServiceProtocol = StatisticService()
+   
     
     override func viewDidLoad() {
         super.viewDidLoad()
