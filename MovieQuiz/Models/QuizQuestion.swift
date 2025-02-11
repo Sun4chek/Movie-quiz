@@ -4,8 +4,10 @@
 //
 //  Created by Волошин Александр on 23.01.2025.
 //
+import Foundation
+
 struct QuizQuestion {
-    let image: String
+    let image: Data
     let text: String
     let correctAnswer: Bool
 }
