@@ -11,7 +11,6 @@ final class MovieQuizViewController: UIViewController {
     
     private var presenter = MovieQuizPresenter()
     private var questionFactory : QuestionFactoryProtocol?
-    private var currentQuestion: QuizQuestion?
     private var alertPresenter = AlertPresenter()
     private var correctAnswers = 0
     private var statisticService: StatisticServiceProtocol = StatisticService()
@@ -19,8 +18,8 @@ final class MovieQuizViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-       
-       imageView.layer.cornerRadius = 20
+        presenter.viewController = self
+        imageView.layer.cornerRadius = 20
         questionFactory = QuestionFactory(moviesLoader: MoviesLoader(), delegate: self)
         statisticService = StatisticService()
         self.alertPresenter.setDelegateView(self)
@@ -29,21 +28,11 @@ final class MovieQuizViewController: UIViewController {
     }
     
     @IBAction private func yesButtonClicked(_ sender: UIButton) {
-        guard let currentQuestion = currentQuestion else {
-            return
-        }
-        let givenAnswer = true
-        
-        showAnswerResult(isCorrect: givenAnswer == currentQuestion.correctAnswer)
+        presenter.yesButtonClicked()
     }
     
     @IBAction private func noButtonClicked(_ sender: UIButton) {
-        guard let currentQuestion = currentQuestion else {
-            return
-        }
-        let givenAnswer = false
-        
-        showAnswerResult(isCorrect: givenAnswer == currentQuestion.correctAnswer)
+        presenter.noButtonClicked()
     }
     private func showLoadingIndicator() {
         activitytIndicator.isHidden = false
@@ -64,13 +53,13 @@ final class MovieQuizViewController: UIViewController {
     }
     
     
-    private func show(quiz step: QuizStepViewModel) {
+    func show(quiz step: QuizStepViewModel) {
         counterLabel.text = step.questionNumber
         imageView.image = step.image
         textLabel.text = step.question
     }
    
-    private func showAnswerResult(isCorrect: Bool) {
+    func showAnswerResult(isCorrect: Bool) {
         imageView.layer.masksToBounds = true
         imageView.layer.borderWidth = 8
         imageView.layer.cornerRadius = 20
@@ -119,15 +108,7 @@ final class MovieQuizViewController: UIViewController {
 
 extension MovieQuizViewController : QuestionFactoryDelegate {
     func didReceiveNextQuestion(question: QuizQuestion?){
-        guard let question else {
-            return
-        }
-        currentQuestion = question
-        let viewModel = presenter.convert(model: question)
-        
-        DispatchQueue.main.async { [weak self] in
-            self?.show(quiz: viewModel)
-        }
+        presenter.didReceiveNextQuestion(question: question)
     }
     func didFailToLoadData(with error: Error) {
         showNetworkError(message: error.localizedDescription) // возьмём в качестве сообщения описание ошибки
