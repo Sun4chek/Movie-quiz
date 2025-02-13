@@ -9,11 +9,10 @@ final class MovieQuizViewController: UIViewController {
 
     @IBOutlet weak var activitytIndicator: UIActivityIndicatorView!
     
-    private let questionsAmount = 10
+    private var presenter = MovieQuizPresenter()
     private var questionFactory : QuestionFactoryProtocol?
     private var currentQuestion: QuizQuestion?
     private var alertPresenter = AlertPresenter()
-    private var currentQuestionIndex = 0
     private var correctAnswers = 0
     private var statisticService: StatisticServiceProtocol = StatisticService()
    
@@ -57,22 +56,13 @@ final class MovieQuizViewController: UIViewController {
         let model = AlertModel(title: "Ошибка", message: message,buttonText: "Попробовать еще раз"){ [weak self] in
             guard let self = self else {return}
             self.questionFactory?.requestNextQuestion()
-            self.currentQuestionIndex = 0
+            self.presenter.resetQuestionIndex()
             self.correctAnswers = 0
         }
         alertPresenter.showAlert(model: model)
         // создайте и покажите алерт
     }
     
-    private func convert(model: QuizQuestion) -> QuizStepViewModel {
-        let questionStep = QuizStepViewModel(
-            
-            image: UIImage(data: model.image) ?? UIImage(),
-            question: model.text,
-            questionNumber:"\(currentQuestionIndex+1)/\(questionsAmount)"
-        )
-        return questionStep
-    }
     
     private func show(quiz step: QuizStepViewModel) {
         counterLabel.text = step.questionNumber
@@ -97,7 +87,7 @@ final class MovieQuizViewController: UIViewController {
     }
     
     private func showNextQuestionOrResults() {
-        if currentQuestionIndex == questionsAmount - 1 {
+        if presenter.isLastQuestion() {
             statisticService.store(correct: correctAnswers, total: 10)
             
             let dateFormatter = DateFormatter()
@@ -113,7 +103,7 @@ final class MovieQuizViewController: UIViewController {
                                         message: text,
                                         buttonText: "Сыграть ещё раз") { [weak self] in
                     guard let self else { return }
-                    self.currentQuestionIndex = 0
+                    self.presenter.resetQuestionIndex()
                     self.correctAnswers = 0
                     self.imageView.layer.borderColor = UIColor.clear.cgColor
                     questionFactory?.requestNextQuestion()
@@ -121,7 +111,7 @@ final class MovieQuizViewController: UIViewController {
             alertPresenter.showAlert(model: alertModel)
         } else {
             imageView.layer.borderColor = UIColor.clear.cgColor
-            currentQuestionIndex += 1
+            presenter.switchToNextQuestion()
             self.questionFactory?.requestNextQuestion()
         }
     }
@@ -133,7 +123,7 @@ extension MovieQuizViewController : QuestionFactoryDelegate {
             return
         }
         currentQuestion = question
-        let viewModel = convert(model: question)
+        let viewModel = presenter.convert(model: question)
         
         DispatchQueue.main.async { [weak self] in
             self?.show(quiz: viewModel)
