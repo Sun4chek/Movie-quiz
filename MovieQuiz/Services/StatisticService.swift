@@ -77,7 +77,9 @@ final class StatisticService:StatisticServiceProtocol {
         
         let newGameResult = GameResult(correct: count, total: amount, date: Date())
         if newGameResult.isBetterThan(bestGame){
-            bestGame = newGameResult
+            storage.set(count, forKey: Keys.correctBestGame.rawValue)
+            storage.set(amount, forKey: Keys.totalBestGame.rawValue)
+            storage.set(Date(), forKey: Keys.dateBestGame.rawValue)
         }
     }
     
