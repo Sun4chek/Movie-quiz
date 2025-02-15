@@ -21,28 +21,28 @@ final class MovieQuizPresenter: QuestionFactoryDelegate {
     
     init(viewController: MovieQuizViewControllerProtocol) {
         self.viewController = viewController as? MovieQuizViewController
-            
-            questionFactory = QuestionFactory(moviesLoader: MoviesLoader(), delegate: self)
-            questionFactory?.loadData()
-            viewController.showLoadingIndicator()
-        }
+        
+        questionFactory = QuestionFactory(moviesLoader: MoviesLoader(), delegate: self)
+        questionFactory?.loadData()
+        viewController.showLoadingIndicator()
+    }
     
     
-    func didAnswer(isCorrectAnswer: Bool){
+    private func didAnswer(isCorrectAnswer: Bool){
         if isCorrectAnswer {
             correctAnswers += 1
         }
     }
-    func isLastQuestion() -> Bool {
+    private func isLastQuestion() -> Bool {
         currentQuestionIndex == questionsAmount - 1
     }
-        
+    
     func resetGame() {
         currentQuestionIndex = 0
         correctAnswers = 0
     }
-        
-    func switchToNextQuestion() {
+    
+    private func switchToNextQuestion() {
         currentQuestionIndex += 1
     }
     
@@ -65,13 +65,13 @@ final class MovieQuizPresenter: QuestionFactoryDelegate {
     }
     
     private func didAnswer(isYes: Bool) {
-           guard let currentQuestion = currentQuestion else {
-               return
-           }
-           
-           let givenAnswer = isYes
-           
-           showAnswerResult(isCorrect: givenAnswer == currentQuestion.correctAnswer)
+        guard let currentQuestion = currentQuestion else {
+            return
+        }
+        
+        let givenAnswer = isYes
+        
+        showAnswerResult(isCorrect: givenAnswer == currentQuestion.correctAnswer)
     }
     
     func didReceiveNextQuestion(question: QuizQuestion?){
@@ -102,9 +102,9 @@ final class MovieQuizPresenter: QuestionFactoryDelegate {
             let alertModel = AlertModel(title: "Этот раунд окончен!",
                                         message: text,
                                         buttonText: "Сыграть ещё раз") { [weak self] in
-                    guard let self else { return }
-                    self.resetGame()
-                    questionFactory?.requestNextQuestion()
+                guard let self else { return }
+                self.resetGame()
+                questionFactory?.requestNextQuestion()
             }
             viewController?.showGameResults(alertModel)
         } else {
@@ -114,14 +114,14 @@ final class MovieQuizPresenter: QuestionFactoryDelegate {
         }
     }
     
-
+    
     
     func didFailToLoadData(with error: Error) {
-        viewController?.showNetworkError(message: error.localizedDescription) // возьмём в качестве сообщения описание ошибки
+        viewController?.showNetworkError(message: error.localizedDescription)
     }
     
     func didLoadDataFromServer() {
-        viewController?.activitytIndicator.isHidden = true // скрываем индикатор загрузки
+        viewController?.activitytIndicator.isHidden = true 
         questionFactory?.requestNextQuestion()
     }
     

@@ -5,14 +5,14 @@ protocol MovieQuizViewControllerProtocol: AnyObject {
     func highlightImageBorder(isCorrectAnswer: Bool)
     
     func showLoadingIndicator()
- 
+    
     func showNetworkError(message: String)
     
     func showGameResults(_ alertModel: AlertModel)
 }
 
 final class MovieQuizViewController: UIViewController,MovieQuizViewControllerProtocol{
-   
+    
     
     // MARK: - Lifecycle
     @IBOutlet private weak var counterLabel: UILabel!
@@ -22,7 +22,7 @@ final class MovieQuizViewController: UIViewController,MovieQuizViewControllerPro
     
     private var presenter: MovieQuizPresenter!
     private var alertPresenter = AlertPresenter()
-   
+    
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -43,12 +43,12 @@ final class MovieQuizViewController: UIViewController,MovieQuizViewControllerPro
     
     func showLoadingIndicator() {
         activitytIndicator.isHidden = false
-        activitytIndicator.startAnimating() // включаем анимацию
+        activitytIndicator.startAnimating() 
     }
     
     func showNetworkError(message: String) {
         
-        activitytIndicator.isHidden = true// скрываем индикатор загрузки
+        activitytIndicator.isHidden = true
         let model = AlertModel(title: "Ошибка", message: message,buttonText: "Попробовать еще раз"){ [weak self] in
             guard let self = self else {return}
             self.presenter.questionFactory?.requestNextQuestion()
@@ -56,7 +56,7 @@ final class MovieQuizViewController: UIViewController,MovieQuizViewControllerPro
             
         }
         alertPresenter.showAlert(model: model)
-        // создайте и покажите алерт
+        
     }
     
     func showGameResults(_ alertModel: AlertModel) {
@@ -70,11 +70,11 @@ final class MovieQuizViewController: UIViewController,MovieQuizViewControllerPro
         imageView.image = step.image
         textLabel.text = step.question
     }
-   
+    
     func highlightImageBorder(isCorrectAnswer: Bool) {
-           imageView.layer.masksToBounds = true
-           imageView.layer.borderWidth = 8
-           imageView.layer.borderColor = isCorrectAnswer ? UIColor.ypGreen.cgColor : UIColor.ypRed.cgColor
+        imageView.layer.masksToBounds = true
+        imageView.layer.borderWidth = 8
+        imageView.layer.borderColor = isCorrectAnswer ? UIColor.ypGreen.cgColor : UIColor.ypRed.cgColor
     }
     
     
